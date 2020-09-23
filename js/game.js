@@ -22,8 +22,8 @@ var gGame = {
 }
 
 var gLevelEasy = {
-    size: 2,
-    mines: 1
+    size: 4,
+    mines: 2
 }
 
 var gLevelMedium = {
