@@ -1,0 +1,148 @@
+body {
+    font-family: sans-serif;
+    background-color: #18191A;
+    /* width: 350px; */
+    /* height: auto; */
+    /* border: 5px solid #C1C2C6; */
+    margin: auto;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: #C1C2C6;
+}
+
+/* h1 {
+    font-size: 30px;
+    padding: 10px;
+    margin: auto;
+    text-align: center;
+    color: #C1C2C6;
+    border-bottom: 4px solid #C1C2C6;
+    border-radius: 3px;
+    width: 330px;
+} */
+
+/* img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
+} */
+
+.container {
+    text-align: center;
+    color: #C1C2C6;
+    margin: auto;
+    width: auto;
+    padding: 10px;
+    border-radius: 7px;
+}
+
+table {
+    margin: auto;
+}
+
+.board {
+    text-align: center;
+    margin: auto;
+    background-color:  #242526;
+    border: darkcyan;
+    /* border: 3px solid #C1C2C6; */
+}
+
+.board td {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    transition: 350ms;
+    font-size: 10px;
+    border-radius: 10%;
+    margin: auto;
+    border: 3px solid #C1C2C6;
+}
+
+.board td:hover {
+    background-color: darkcyan;
+    cursor: pointer;
+}
+
+.buttons {
+    margin: auto;
+    text-align: center;
+}
+
+.button {
+    margin: auto;
+    margin-bottom: 15px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 25px;
+    width: 107px;
+    height: 38px;
+    border: 3px solid #C1C2C6;
+    border-radius: 5px;
+    background-color: #242526;
+    color: #C1C2C6;
+    transition: 350ms;
+}
+
+#btn1:hover {
+    background-color: #027F00;
+    cursor: pointer;
+}
+
+#btn2:hover {
+    background-color: #919100;
+    cursor: pointer;
+}
+
+#btn3:hover {
+    background-color: #A50000;
+    cursor: pointer;
+}
+
+
+.timer {
+    width: 175px;
+    height: auto;
+    text-align: center;
+    vertical-align: middle;
+    transition: 350ms;
+    font-size: 25px;
+    border-bottom: 3px solid #C1C2C6;
+    border-radius: 2px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+
+.counter {
+    width: 175px;
+    height: auto;
+    text-align: center;
+    vertical-align: middle;
+    transition: 350ms;
+    font-size: 25px;
+    border-bottom: 3px solid #C1C2C6;
+    border-radius: 2px;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+
+.message {
+    display: none;
+    text-align: center;
+    color: #C1C2C6;
+    margin: auto;
+    /* width: auto; */
+    font-size: 50px;
+    text-decoration: underline;
+    margin-bottom: 20px;
+    color: white;
+    position: absolute;
+    /* top: auto; */
+    /* left: auto; */
+    z-index: 10;
+}
+
+/* .cell {
