@@ -1,187 +1,154 @@
 'use strict';
 
-
-// var gBoard = [
-//     [
-
-//     ],
-//     {
-
-//         minesAroundCount: 4,
-//         isShown: true,
-//         isMine: false,
-//         isMarked: true
-//     }
-// ];
-
 var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    secsPassed: 0,
+    specialMode: 0  //  0 = false --- 1 = reveal mode --- 2 = manual mode
 }
 
 var gLevelEasy = {
+    name: 1,
     size: 4,
-    mines: 2
+    mines: 2,
+    lives: 3,
+    hints: 3,
+    safeClicks: 3,
+    champion: {
+        name: localStorage.championNameEasy,
+        time: localStorage.championTimeEasy
+    }
 }
 
 var gLevelMedium = {
+    name: 2,
     size: 8,
-    mines: 12
+    mines: 12,
+    lives: 3,
+    hints: 3,
+    safeClicks: 3,
+    champion: {
+        name: localStorage.championNameMedium,
+        time: localStorage.championTimeMedium
+    }
 }
 
 var gLevelHard = {
+    name: 3,
     size: 12,
-    mines: 30
+    mines: 30,
+    lives: 3,
+    hints: 3,
+    safeClicks: 3,
+    champion: {
+        name: localStorage.championNameHard,
+        time: localStorage.championTimeHard
+    }
 }
 
 var gLevel = {};
 var gBoard = [];
 var gStopWatchInterval;
-var gTimeElapsed;
 
-const MINE = '@';
-const CLICKED_MINE = '#';
-const FLAG = '+';
+// const MINE = '@';
+// const CLICKED_MINE = '#';
+// const MARK = '+';
+// const PRESSED = '*';
+const MINE_IMG = '<img src="imgs/mine.png" alt="Mine">';
+const BOOM_IMG = '<img src="imgs/boom.png" alt="BOOM">';
+const MARK_IMG = '<img src="imgs/mark.png" alt="Mark">';
 const EMPTY = '.';
-const PRESSED = '*';
-const NOT_SHOWN = '';
+const NOT_SHOWN = null;
+
+const HINT = 'Hint'
+const HINT_CLICKED = '-'
+
+const SAFE = 'Safe'
+const SAFE_CLICKED = '-'
+
+const RED = '#A50000'
+const YELLOW = '#919100'
+const GREEN = '#027F00'
+const BLANK = '#242526'
+
+var smiley = {
+    normal: '🙂',
+    win: '😎',
+    mine: '🤯',
+    dead: '💀'
+}
 
 function init(level) {
-    clearInterval(gStopWatchInterval);
-    gGame.isOn = false;
     gLevel = level;
-    renderTime(0);
+    gGame = {
+        isOn: false,
+        shownCount: 0,
+        markedCount: 0,
+        secsPassed: 0,
+        specialMode: 0,
+    }
+    resetInterface()
     gBoard = buildBoard(gLevel.size)
-    console.table(gBoard);
     renderBoard(gBoard, '.container')
 }
 
-function stopWatch() {
-    var milSecElapsed = 0;
-    gStopWatchInterval = setInterval(function () {
-        milSecElapsed += 5;
-        renderTime(milSecElapsed);
-    }, 5);
+function resetInterface() {
+    clearInterval(gStopWatchInterval);
+    renderTime(0);
+    renderSmiley(smiley.normal);
+    renderLivesCount();
+    renderMinesCount(gLevel.mines);
+    renderMessage();
+    generateHints();
+    generateSafeClicks();
+    renderChampion(gLevel.champion)
 }
 
 function minesInit(currCell) {
     placeRandomMines(currCell);
-    negsLoop(setMinesNegsCount);
-    renderBoard(gBoard, '.container');
+    setMinesNegsCount();
+    renderBoard(gBoard, '.container', false);
 }
 
-function buildBoard(size) {
-    var board = [];
-    for (var i = 0; i < size; i++) {
-        board.push([]);
-        for (var j = 0; j < size; j++) {
-            board[i][j] = {
-                minesAround: 0,
-                isShown: false,
-                isMine: false,
-                isMarked: false
-            }
-        }
-    }
-    return board;
-}
-
-function placeRandomMines(currCell) {
-    var count = 0
-    while (count < gLevel.mines) {
-        var randomI = getRandomIntInclusive(0, (gLevel.size) - 1)
-        var randomJ = getRandomIntInclusive(0, (gLevel.size) - 1)
-        if (gBoard[randomI][randomJ] === currCell) continue;
-        else {
-            gBoard[randomI][randomJ].isMine = true;
-            count++
-        }
-    }
-}
-
-
-
-function revealNegs(currPos, currCell) {
-    for (var i = currPos[0] - 1; i <= currPos[0] + 1; i++) {
+function revealNegs(currPos) {
+    for (var i = currPos.i - 1; i <= currPos.i + 1; i++) {
         if (i < 0 || i > gLevel.size - 1) continue;
-        for (var j = currPos[1] - 1; j <= currPos[1] + 1; j++) {
+        for (var j = currPos.j - 1; j <= currPos.j + 1; j++) {
             if (j < 0 || j > gLevel.size - 1) continue;
             var currNeg = gBoard[i][j]
             var negPos = [i, j]
-            if (currNeg.isShown === false && currNeg.isMine === false) {
+            if (!currNeg.isShown && !currNeg.isMine && !currNeg.isMarked) {
                 currNeg.isShown = true
                 gGame.shownCount++;
                 // revealNegs(negPos, currNeg)
             }
         }
     }
-    renderBoard(gBoard, '.container')
+    renderBoard(gBoard, '.container', false)
 }
 
-function negsLoop(func) {
-    for (var i = 0; i < gLevel.size; i++) {
-        for (var j = 0; j < gLevel.size; j++) {
-            for (var k = i - 1; k <= i + 1; k++) {
-                if (k < 0 || k > gLevel.size - 1) continue;
-                for (var l = j - 1; l <= j + 1; l++) {
-                    if (l < 0 || l > gLevel.size - 1) continue;
-                    var currCell = gBoard[i][j];
-                    var currNeg = gBoard[k][l];
-                    if (func === setMinesNegsCount) setMinesNegsCount(currCell, currNeg);
-                }
-            }
-        }
-    }
-}
+function cellClicked(ev, elCell) {
+    var currPos = {
+        i: +elCell.className.substring(9, elCell.className.indexOf('-')),
+        j: +elCell.className.substring(elCell.className.indexOf('-') + 1)
+    };
 
-function setMinesNegsCount(currCell, currNeg) {
-    if (currNeg.isMine && currCell !== currNeg) currCell.minesAround++;
-}
+    var currCell = gBoard[currPos.i][currPos.j];
 
-function renderBoard(board, selector) {
-    var strHTML = '<table class="board"><tbody oncontextmenu="return false;">';
-    for (var i = 0; i < gLevel.size; i++) {
-        strHTML += '<tr>';
-        for (var j = 0; j < gLevel.size; j++) {
-            var className = 'cell' + i + '-' + j;
-            var currCell = board[i][j];
-            strHTML += '<td class="cell ' + className + '" onmousedown="cellClicked(event)" onmouseup="cellClicked(event)">'
-            if (currCell.isShown) {
-                if (currCell.isMine) strHTML += MINE;
-                else if (currCell.minesAround) strHTML += currCell.minesAround;
-                else if (!currCell.minesAround) strHTML += EMPTY;
-                else if (currCell.isMarked) strHTML += FLAG;
-            }
-            strHTML += '</td>';
-        }
-        strHTML += '</tr>'
-    }
-    strHTML += '</tbody></table>';
-    var elContainer = document.querySelector(selector);
-    elContainer.innerHTML = strHTML;
-}
-
-function renderCell(pos, value) {
-    var elCell = document.querySelector(`.cell${pos[0]}-${pos[1]}`);
-    elCell.innerHTML = value;
-}
-
-function cellClicked(ev) {
-    var currPos = ev.target.className.match(/[0-9]/g).map(Number);
-    var currCell = gBoard[currPos[0]][currPos[1]];
-
-    if (!gGame.isOn) {
+    // if (gGame.specialMode === 2) {
+    //     placeMines(currCell, currPos)
+    //     return;
+    // }
+    // if (!gGame.isOn && gGame.specialMode === 0 && gGame.shownCount === 0) {
+    if (!gGame.isOn && gGame.shownCount === 0) {
         minesInit(currCell)
         gGame.isOn = true;
         stopWatch();
-    }
-    if (currCell.isShown) return;
+    } else if (!gGame.isOn || currCell.isShown) return;
 
-    if (ev.type === 'mousedown' && ev.button === 0) {
-        if (currCell.isMarked) return;
-        // renderCell(currPos, PRESSED)
+    if (gGame.specialMode === 1) {
+        hintReveal(currPos);
         return;
     }
 
@@ -189,67 +156,110 @@ function cellClicked(ev) {
         if (currCell.isMarked) return;
         currCell.isShown = true;
         if (currCell.isMine) {
-            gameFinished(false);
-            renderCell(currPos, CLICKED_MINE);
+            if (gLevel.lives > 1) {
+                gLevel.lives--;
+                renderCell(currPos, MINE_IMG, YELLOW);
+                renderSmiley(smiley.mine);
+                setTimeout(function () {
+                    currCell.isShown = false;
+                    renderCell(currPos, NOT_SHOWN)
+                    renderLivesCount();
+                }, 1500);
+                return
+            } else {
+                gLevel.lives--;
+                renderLivesCount();
+                renderCell(currPos, BOOM_IMG);
+                gameFinished(false);
+                return;
+            }
         } else if (currCell.minesAround) {
+            renderSmiley(smiley.normal);
             renderCell(currPos, currCell.minesAround);
             gGame.shownCount++;
             checkVictory()
         } else {
             gGame.shownCount++;
+            renderSmiley(smiley.normal);
             revealNegs(currPos, currCell);
             checkVictory()
         }
     }
-    if (ev.type === 'mousedown' && ev.button === 2);
 
     if (ev.type === 'mouseup' && ev.button === 2) {
         if (!currCell.isMarked) {
             currCell.isMarked = true;
-            renderCell(currPos, FLAG);
+            renderCell(currPos, MARK_IMG);
             gGame.markedCount++;
+            checkVictory()
             if (gGame.markedCount === gLevel.mines) checkVictory();
         } else if (currCell.isMarked) {
             currCell.isMarked = false;
             renderCell(currPos, NOT_SHOWN);
             gGame.markedCount--;
         }
-        var elCounter = document.querySelector('.counter');
-        elCounter.innerText = 'Mines Left: ' + (gLevel.mines - gGame.markedCount);
+        renderMinesCount(gLevel.mines - gGame.markedCount)
     }
+
+    // if (ev.type === 'mousedown' && ev.button === 0)
+    // if (ev.type === 'mousedown' && ev.button === 2)
 }
 
 function checkVictory() {
     if (gGame.markedCount + gGame.shownCount === Math.pow(gLevel.size, 2)) gameFinished(true);
 }
 
-// function checkVictory() {
-//     for (var i = 0; i < gLevel.size; i++) {
-//         for (var j = 0; j < gLevel.size; j++) {
-//             var currCell = gBoard[i][j];
-//             if (!currCell.isShown || !currCell.isMarked) return;
-//             else gameFinished(true);
-//         }
-//     }
-// }
-
 function gameFinished(isWin) {
     clearInterval(gStopWatchInterval);
     gGame.isOn = false;
-    // renderBoard(gBoard, '.container');
-    var elMessage = document.querySelector('.message');
+    renderBoard(gBoard, '.container', true);
     if (isWin) {
-        elMessage.innerText = 'VICTORY';
-
+        renderMessage('VICTORY');
+        renderSmiley(smiley.win);
+        checkChampion(gGame.secsPassed)
     } else {
-        elMessage.innerText = 'GAME OVER';
-
+        renderMessage('GAME OVER');
+        renderSmiley(smiley.dead);
     }
-    elMessage.style.display = 'block';
 }
 
-function cellMarked(pos) {
-    var currCell = gBoard[pos[0]][pos[1]];
-    currCell.isMarked = true;
-    renderCell(pos, FLAG)
+function checkChampion(secsPassed) {
+    var newName;
+    var champion = {
+        name: '',
+        time: '',
+    };
+    switch (gLevel.name) {
+        case 1: // Easy Level Name
+            if (+localStorage.championTimeEasy <= secsPassed) {
+                champion.name = localStorage.championNameEasy
+                champion.time = localStorage.championTimeEasy
+                break;
+            }
+            newName = prompt('YOU ARE THE NEW EASY LEVEL CHAMPION!\nPlease enter your name:')
+            champion.name = localStorage.championNameEasy = newName;
+            champion.time = localStorage.championTimeEasy = secsPassed;
+            break
+        case 2: // Medium Level Name
+            if (+localStorage.championTimeMedium <= secsPassed) {
+                champion.name = localStorage.championNameMedium
+                champion.time = localStorage.championTimeMedium
+                break;
+            }
+            newName = prompt('YOU ARE THE NEW MEDIUM LEVEL CHAMPION!\nPlease enter your name:')
+            champion.name = localStorage.championNameMedium = newName;
+            champion.time = localStorage.championTimeMedium = secsPassed;
+            break
+        case 3: // Hard Level Name
+            if (+localStorage.championTimeHard <= secsPassed) {
+                champion.name = localStorage.championNameHard;
+                champion.time = localStorage.championTimeHard;
+                break;
+            }
+            newName = prompt('YOU ARE THE NEW HARD LEVEL CHAMPION!\nPlease enter your name:')
+            champion.name = localStorage.championNameHard = newName;
+            champion.time = localStorage.championTimeHard = secsPassed;
+            break
+    }
+    renderChampion(champion);
 }
