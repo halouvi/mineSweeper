@@ -177,7 +177,7 @@ function renderChampion(champion) {
   var elChampion = document.querySelector('.champion');
   if (!champion.name) champion.name = 'Almoni';
   if (!champion.time) elChampion.innerHTML = '&#8203';
-  else elChampion.innerText = 'Champion: ' + champion.name + ' - ' + formatTime(+champion.time);
+  else elChampion.innerText = 'Champion:  ' + champion.name + ' - ' + formatTime(+champion.time);
 }
 
 function safeClick() {
