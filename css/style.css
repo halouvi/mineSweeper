@@ -1,22 +1,27 @@
 body {
-    font-family: sans-serif;
+    font-family: fantasy;
     background-color: #18191A;
     margin: auto;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 10px;
     color: #C1C2C6;
     text-align: center;
     vertical-align: middle;
 }
 
-img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 4px;
+h1 {
+    font-size: 25px;
+    margin: auto;
 }
 
-.container {
+img {
+    max-width: 19px;
+    max-height: 19px;
+    border-radius: 4px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0px;
+}
+
+.board {
     text-align: center;
     color: #C1C2C6;
     margin: auto;
@@ -25,19 +30,25 @@ img {
     border-radius: 7px;
 }
 
-.board {
+.container {
+    width: fit-content;
+    margin: auto;
+}
+
+table {
     text-align: center;
     margin: auto;
-    background-color:  #242526;
+    background-color: #242526;
     border: 2px solid #C1C2C6;
     border-radius: 3px;
-    /* border-radius: 3px; */
 }
 
 .board td {
     width: 20px;
     height: 20px;
     text-align: center;
+    vertical-align: middle;
+    margin: auto;
     font-size: 10px;
     border: 2px solid #C1C2C6;
     border-radius: 2px;
@@ -49,19 +60,8 @@ img {
     cursor: pointer;
 }
 
-.buttons {
-    margin: auto;
-    text-align: center;
-}
-
 button {
-    padding: 2px;
-    padding-right: 5px;
-    padding-left: 5px;
-    margin: auto;
-    margin-bottom: 7px;
-    text-align: center;
-    vertical-align: middle;
+    margin-bottom: 5px;
     width: 60px;
     height: auto;
     border: 1.5px solid #C1C2C6;
@@ -69,39 +69,25 @@ button {
     background-color: #242526;
     color: #C1C2C6;
     transition: 350ms;
+    font-family: inherit;
 }
 
 .banners {
     margin: auto;
-    /* margin-bottom: 20px; */
     text-align: center;
-    /* line-height: 10px; */
 }
 
-.banner {
-    margin: auto;
-    margin-bottom: 10px;
-    width: 20px;
-    height: 200px;
-    text-align: center;
-    vertical-align: middle;
-    transition: 350ms;
-    font-size: 15px;
-    border-radius: 2px;
-}
- 
 button:hover {
     background-color: darkcyan;
     cursor: pointer;
 }
 
-.message {
-    display: none;
-    text-align: center;
-    color: #C1C2C6;
-    margin: auto;
-    font-size: 30px;
-    text-decoration: underline;
+.hints button{
+    width: 38px;
+}
+
+.safe-clicks button{
+    width: 38px;
 }
 
 #btn1:hover {
@@ -116,5 +102,9 @@ button:hover {
 
 #btn3:hover {
     background-color: #A50000;
+    cursor: pointer;
+}
+
+.smiley {
     cursor: pointer;
 }

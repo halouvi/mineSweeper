@@ -10,34 +10,34 @@
 </head>
 
 <body onload="init(gLevelEasy)">
+
     <h1>MINE SWEEPER!!!</h1>
 
+    <span class="banner timer"></span>
+    <br>
+    <span class="banner champion"></span>
     <div class="buttons">
         <button id='btn1' onclick="init(gLevelEasy)">Easy</button>
         <button id='btn2' onclick="init(gLevelMedium)">Medium</button>
         <button id='btn3' onclick="init(gLevelHard)">Hard</button>
     </div>
-    <div class="banners">
-        <span class="banner hints"></span>
-        <br>
-        <span class="banner safe-clicks"></span>
-        <!-- <span class="banner manual"><button class='button' onclick="renderManualMode(this)">Manual Mode</button></span> -->
-        <br>
-        <span class="banner lives"></span> |
-        <span class="banner timer"></span> |
-        <span class="banner mines"></span>
-        <br>
-        <span class="banner champion"></span>
-        <br>
-        <span class="banner smiley">🙂</span>
-        <br>
-        <span class="banner message"></span>
+    <div class="container" oncontextmenu="return false">
+        <div class="banners">
+            
+            <span class="banner hints"></span>
+            <span class="banner safe-clicks"></span>
+            <br>
+            <span class="banner manual"><button onclick="initManualMode()">Manual</button></span>
+            <span class="banner undo"><button onclick="undo()">Undo</button></span>
+            <br>
+            <span class="banner lives"></span> |
+            <span class="banner smiley" onclick="init(gLevel)">🙂</span>
+            <span class="banner mines"></span>
+            
+        </div>
+        <div class="board">
+        </div>
     </div>
-
-    <div class="container">
-    </div>
-
-
 
     <script src="js/game.js"></script>
     <script src="js/utils.js"></script>
